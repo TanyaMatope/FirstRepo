@@ -42,13 +42,27 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Publish
-      run: dotnet publish ./WebApplication.sln --configuration Release --output ./publish
+      run: dotnet publish ./WebApplication2.sln --configuration Release --output ./publish
+
+    - name: Build Docker Image
+      run: docker build -t ubuntu ./publish
+
+    - name: Tag Docker Image
+      run: docker tag tanya-repo/ubuntu:latest
+
+    - name: Log in to Docker Hub
+      run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Push Docker Image
+      run: docker push tanya-repo/ubuntu:latest
 
     - name: Deploy to Staging
-      run: |
-        # Add your deployment commands here
-        # For example, deploying to Azure or another platform
-        echo "Deploying to staging environment"
+      run: 
+        docker-compose -f docker-compose.staging.yml up -d
+        echo "Deployed to staging environment"
 
     - name: Notify on Deployment Failure
       if: failure()
