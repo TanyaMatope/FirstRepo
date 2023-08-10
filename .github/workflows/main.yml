@@ -42,7 +42,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Publish
-      run: dotnet publish ./WebApplication2.sln --configuration Release --output ./publish
+      run: dotnet publish ./WebApplication.sln --configuration Release --output ./publish
 
     - name: Deploy to Staging
       run: |
