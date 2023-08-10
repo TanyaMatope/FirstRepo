@@ -1,0 +1,13 @@
+version: '3'
+services:
+  web:
+    image: tanya-repo/windows:latest
+    ports:
+      - "8080:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Staging
+    networks:
+      - my-network
+networks:
+  my-network:
+    external: true
