@@ -1,0 +1,55 @@
+name: Windows CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Restore NuGet packages
+      run: dotnet restore ./WebApplication2.sln
+
+    - name: Build
+      run: dotnet build ./WebApplication2.sln --configuration Release
+
+  test:
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Test
+      run: dotnet test ./WebApplication2.sln --configuration Release --collect:"XPlat Code Coverage"
+
+  deploy:
+    needs: test
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Publish
+      run: dotnet publish ./WebApplication2.sln --configuration Release --output ./publish
+
+    - name: Deploy to Staging
+      run: |
+        # Add your deployment commands here
+        # For example, deploying to Azure or another platform
+        echo "Deploying to staging environment"
+
+    - name: Notify on Deployment Failure
+      if: failure()
+      run: echo "Deployment to staging failed. Notify the team."
